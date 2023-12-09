@@ -1,0 +1,34 @@
+# 필수 라이브러리 가져오기
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, classification_report
+
+# 데이터 준비
+data = pd.read_csv('text_classification_data.csv')
+# 데이터 세트를 훈련 세트와 테스트 세트로 분할
+X = data['text'] # 텍스트 데이터
+y = data['label'] # 상표
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,
+random_state=42)
+
+# 특징 추출
+# TF-IDF 를 사용하여 텍스트 데이터 벡터화
+tfidf_vectorizer = TfidfVectorizer(max_features=5000) # 가장 중요한 5000 개의
+특징 단어를 선택하세요.
+X_train_tfidf = tfidf_vectorizer.fit_transform(X_train)
+X_test_tfidf = tfidf_vectorizer.transform(X_test)
+
+# 훈련 모델
+classifier = MultinomialNB()
+classifier.fit(X_train_tfidf, y_train)
+
+# 예상하다
+y_pred = classifier.predict(X_test_tfidf)
+
+# 평가모델
+accuracy = accuracy_score(y_test, y_pred)
+report = classification_report(y_test, y_pred)
+print(f'정확성：{accuracy}')
+print(report)
